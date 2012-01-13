@@ -7,15 +7,24 @@ Gem::Specification.new do |s|
   s.version     = Soomo::LinkChecker::Client::VERSION
   s.authors     = ["Matthew Bennink"]
   s.email       = ["matt@soomopublishing.com"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/soomo/soomo-linkchecker-client"
   s.summary     = %q{Link Checker Client}
   s.description = %q{Link Checker Client}
 
-  s.rubyforge_project = "soomo-linkchecker-client"
+  # s.rubyforge_project = "soomo-linkchecker-client"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.files         = [
+    ".gitignore",
+    "Gemfile",
+    "README",
+    "Rakefile",
+    "lib/soomo-linkchecker-client.rb",
+    "lib/soomo/link_checker/client/configuration.rb",
+    "lib/soomo/link_checker/client/version.rb",
+    "soomo-linkchecker-client.gemspec"
+  ]
+  # s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  # s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
   # specify any dependencies here; for example:
