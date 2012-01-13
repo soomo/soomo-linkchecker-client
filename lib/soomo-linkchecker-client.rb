@@ -13,11 +13,12 @@ module Soomo
 
     def self.watch_for_updates
       connect do |channel|
-        queue = channel.queue( configuration.queue_name, :durable => true )
+        exchange = channel.topic("soomo.events", :durable => true)
+        queue = channel.queue(configuration.update_queue_name, :durable => true)
+        queue.bind(exchange, :routing_key => "#.update.link.status.#")
         queue.subscribe(:ack => true) do |metadata, payload|
-          _link = JSON.parse( payload )
-          url, status, reason = [ _link['url'], _link['status'], _link['reason'] ]
-          configuration.on_link_update_block.call( url, status, reason )
+          link = JSON.parse(payload)
+          configuration.on_link_update_block.call(link['url'], link['status'], link['reason'])
           metadata.ack
         end
       end
@@ -25,9 +26,20 @@ module Soomo
 
     def self.push( urls )
       connect do |channel|
-        exchange = channel.direct( "" )
-        urls.each do |url|
-          exchange.publish( url, :routing_key => configuration.server_routing_key, :reply_to => configuration.client_routing_key )
+        exchange = channel.topic("soomo.events", :durable => true)
+        Array(urls).each do |url|
+          message = {:url => url}.to_json
+          exchange.publish(message, :routing_key => "create.link", :app_id => configuration.app_id)
+        end
+      end
+    end
+
+    def self.pull( urls )
+      connect do |channel|
+        exchange = channel.topic("soomo.events", :durable => true)
+        Array(urls).each do |url|
+          message = {:url => url}.to_json
+          exchange.publish(message, :routing_key => "delete.link", :app_id => configuration.app_id)
         end
       end
     end
@@ -35,8 +47,8 @@ module Soomo
     protected
 
     def self.connect( &block )
-      AMQP.connect( Soomo::LinkChecker.configuration.broker ) do |connection|
-        block.call( AMQP::Channel.new( connection ) )
+      AMQP.connect(Soomo::LinkChecker.configuration.broker) do |connection|
+        block.call(AMQP::Channel.new(connection))
       end
     end
 

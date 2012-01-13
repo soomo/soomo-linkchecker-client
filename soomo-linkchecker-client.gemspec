@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files         = [
     ".gitignore",
     "Gemfile",
-    "README",
+    "README.md",
     "Rakefile",
     "lib/soomo-linkchecker-client.rb",
     "lib/soomo/link_checker/client/configuration.rb",
